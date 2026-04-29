@@ -6,78 +6,106 @@ import {
   TouchableOpacity, 
   SafeAreaView, 
   StatusBar,
-  Pressable 
+  Pressable,
+  Image,
+  FlatList, // Importado
+  Dimensions, // Importado para saber a largura da tela
+  
 } from 'react-native';
+
+const { width } = Dimensions.get('window');
+
+// Dados fictícios para o carrossel
+const CAROUSEL_DATA = [
+  { id: '1', image: require('./assets/bonfire.png') },
+  { id: '2', image: require('./assets/bonfire.png') },
+  { id: '3', image: require('./assets/bonfire.png') },
+  //800 x 400 pixels o tamanho das images a serem feitas
+
+];
 
 export default function HomeScreen({ navigation }) {
   const [menuVisible, setMenuVisible] = useState(false);
+
+  // Função que renderiza cada item do carrossel
+  const renderBanner = ({ item }) => (
+  <View style={styles.card}>
+    <Image 
+      source={typeof item.image === 'string' ? { uri: item.image } : item.image} 
+      style={styles.fullImage} 
+    />
+  </View>
+);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {/* --- HEADER (Login e Três Pontos) --- */}
+      {/* --- HEADER --- */}
       <View style={styles.header}>
         <View style={styles.headerRight}> 
-          <TouchableOpacity 
-            style={styles.loginSmallBtn}
-            onPress={() => navigation.navigate('Login')}
-          >
+          <TouchableOpacity style={styles.loginSmallBtn} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.loginText}>Login</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.pontosBtn} 
-            onPress={() => setMenuVisible(!menuVisible)}
-          >
-            <Text style={styles.dotsText}>⋮</Text>
+          <TouchableOpacity style={styles.pontosBtn} onPress={() => setMenuVisible(!menuVisible)}>
+              <Image source={require('./assets/dots.png')} style={styles.imagemPontos} resizeMode="contain" />       
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* --- MENU DROPDOWN (Aparece ao clicar nos pontos) --- */}
+      {/* --- MENU DROPDOWN --- */}
       {menuVisible && (
         <>
-          {/* Camada invisível para fechar o menu ao clicar fora */}
-          <Pressable 
-            style={styles.menuOverlay} 
-            onPress={() => setMenuVisible(false)} 
-          />
+          <Pressable style={styles.menuOverlay} onPress={() => setMenuVisible(false)} />
           <View style={styles.dropdownMenu}>
-            <TouchableOpacity 
-              style={styles.menuItem} 
-              onPress={() => { setMenuVisible(false); navigation.navigate('Perfil'); }}
-            >
-              <Text style={styles.menuItemText}>👤 Perfil</Text>
+            <TouchableOpacity style={styles.menuItem} onPress={() => setMenuVisible(false)}>
+                <Image source={require('./assets/user.png')} style={styles.imagemUser} />
+                <Text style={styles.menuItemText}>Perfil</Text>
             </TouchableOpacity>
-            
             <View style={styles.menuDivider} />
-            
-            <TouchableOpacity 
-              style={styles.menuItem} 
-              onPress={() => { setMenuVisible(false); navigation.navigate('Login'); }}
-            >
-              <Text style={[styles.menuItemText, { color: '#EF4444' }]}>🚪 Sair</Text>
+            <TouchableOpacity style={styles.menuItem} onPress={() => setMenuVisible(false)}>
+                <Image source={require('./assets/exit.png')} style={styles.imagemExit} />
+                <Text style={styles.menuItemText}>Sair</Text>
             </TouchableOpacity>
           </View>
         </>
       )}
 
-      {/* --- CONTEÚDO CENTRAL --- */}
+      {/* --- CONTEÚDO CENTRAL COM CARROSSEL --- */}
       <View style={styles.mainContent}>
-        <Text style={styles.welcomeText}>Sua Dashboard</Text>
-        <Text style={styles.infoText}>Conteúdo principal do seu app aqui.</Text>
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>Sua Dashboard</Text>
+          <Text style={styles.infoText}>Arraste para ver as novidades</Text>
+        </View>
+
+        {/* Implementação do Carrossel */}
+        <View style={styles.carouselWrapper}>
+          <FlatList
+            data={CAROUSEL_DATA}
+            renderItem={renderBanner}
+            keyExtractor={(item) => item.id}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            snapToAlignment="center"
+            decelerationRate="fast"
+          />
+        </View>
+        
+        <View style={styles.placeholderContent}>
+            <Text style={styles.infoText}>Mais conteúdos aqui abaixo...</Text>
+        </View>
       </View>
 
       {/* --- BARRA INFERIOR --- */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.navIcon}>🏠</Text>
+          <Image source={require('./assets/home.png')} style={styles.imagemHome} />
           <Text style={styles.navTextActive}>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('Progresso')}>
-          <Text style={styles.navIcon}>📈</Text>
+          <Image source={require('./assets/progress.png')} style={styles.imagemProgress} />
           <Text style={styles.navText}>Progresso</Text>
         </TouchableOpacity>
       </View>
@@ -86,95 +114,61 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F9FAFB',
-    justifyContent: 'space-between',
-  },
-  header: {
-    height: 60,
-    flexDirection: 'row',
-    justifyContent: 'flex-end', // Alinha tudo para a direita
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    zIndex: 10, // Garante que o menu fique por cima
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  loginSmallBtn: {
-    backgroundColor: '#6366F1',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    marginRight: 10,
-  },
-  loginText: {
-    color: '#FFF',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  pontosBtn: {
-    padding: 5,
-  },
-  dotsText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#374151',
-  },
-  /* Dropdown Styles */
-  menuOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 5,
-  },
-  dropdownMenu: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    backgroundColor: '#FFF',
-    width: 150,
-    borderRadius: 12,
-    padding: 10,
-    zIndex: 20,
-    // Sombra
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-  },
-  menuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-  },
-  menuItemText: {
-    fontSize: 15,
-    color: '#374151',
-    fontWeight: '500',
-  },
-  menuDivider: {
-    height: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  /* Resto dos estilos */
-  mainContent: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  header: { height: 60, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: 20, zIndex: 10 },
+  headerRight: { flexDirection: 'row', alignItems: 'center' },
+  loginSmallBtn: { backgroundColor: '#6366F1', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, marginRight: 10 },
+  loginText: { color: '#FFF', fontWeight: '600', fontSize: 14 },
+  pontosBtn: { padding: 8, width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
+  imagemPontos: { width: '100%', height: '100%' },
+
+  /* Menu Dropdown */
+  menuOverlay: { ...StyleSheet.absoluteFillObject, zIndex: 5 },
+  dropdownMenu: { position: 'absolute', top: 60, right: 20, backgroundColor: '#FFF', width: 150, borderRadius: 12, padding: 10, zIndex: 20, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8 },
+  menuItem: { flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 10, alignItems: 'center' },
+  menuItemText: { fontSize: 15, color: '#374151', fontWeight: '500' },
+  menuDivider: { height: 1, backgroundColor: '#F3F4F6' },
+  imagemUser: { width: 15, height: 15, marginRight: 10, resizeMode: 'contain' },
+  imagemExit: { width: 15, height: 15, marginRight: 10, resizeMode: 'contain' },
+
+  /* Conteúdo Central e Carrossel */
+  mainContent: { flex: 1, paddingTop: 20 },
+  welcomeContainer: { paddingHorizontal: 20, marginBottom: 20 },
   welcomeText: { fontSize: 22, fontWeight: 'bold' },
-  infoText: { color: '#6B7280', marginTop: 10 },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF',
-    height: 80,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    paddingBottom: 20,
+  infoText: { color: '#6B7280', marginTop: 4 },
+  
+  carouselWrapper: { height: 180 }, // Altura do carrossel
+  card: {
+    width: width - 40, // Mantém a margem nas laterais
+    height: 180,       // Altura fixa para o banner
+    marginHorizontal: 20,
+    borderRadius: 15,
+    overflow: 'hidden', // Importante para a imagem não "vazar" da borda arredondada
+    backgroundColor: '#EEE', // Uma cor de fundo caso a imagem demore a carregar
   },
+  fullImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover', // Faz a imagem preencher o espaço todo
+  },
+  cardTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold' },
+  cardSub: { color: '#FFF', opacity: 0.9, marginTop: 5 },
+
+  cardImage: {
+  width: '100%',
+  height: 100,      
+  borderRadius: 10,
+  marginBottom: 10,
+  resizeMode: 'cover',
+},
+  
+  placeholderContent: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+
+  /* Barra Inferior */
+  bottomNav: { flexDirection: 'row', backgroundColor: '#FFF', height: 80, borderTopWidth: 1, borderTopColor: '#F3F4F6', paddingBottom: 20 },
+  imagemHome: { width: 25, height: 25, marginBottom: 4, resizeMode: 'contain' },
+  imagemProgress: { width: 25, height: 25, marginBottom: 4, resizeMode: 'contain' },
   navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  navIcon: { fontSize: 20 },
   navText: { fontSize: 12, color: '#6B7280' },
-  navTextActive: { fontSize: 12, color: '#6366F1', fontWeight: 'bold' },
+  navTextActive: { fontSize: 12, color: 'black', fontWeight: 'bold' },
 });
