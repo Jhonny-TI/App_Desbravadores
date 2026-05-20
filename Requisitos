@@ -617,7 +617,7 @@ export default function App() {
           headerTintColor: '#fff'
         }}
       >
-        <Stack.Screen name="Requisitos" component={HomeScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
 
         <Stack.Screen name="Amigo">
           {(props) => <ClassScreen {...props} route={{ params: { name: 'Amigo' } }} />}
@@ -689,3 +689,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#22c55e',
   }
 });
+     
