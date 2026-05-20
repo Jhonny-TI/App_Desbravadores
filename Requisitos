@@ -1,146 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 
 const Stack = createNativeStackNavigator();
 
-function HomeScreen({ navigation }) {
-  const classes = [
-    'Amigo',
-    'Companheiro',
-    'Pesquisador',
-    'Pioneiro',
-    'Excursionista',
-    'Guia'
-  ];
-
-  return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Classes dos Desbravadores</Text>
-      {classes.map((item, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.card}
-          onPress={() => navigation.navigate(item)}
-        >
-          <Text style={styles.cardText}>{item}</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  );
-}
-
-function ClassScreen({ route }) {
-  const { name } = route.params || {};
-
-  const data = {
-    Amigo: ['1. Ter, no mínimo, 10 anos de idade.',
-
-'2. Ser membro ativo do Clube de Desbravadores.',
-
-'3. Memorizar e explicar o Voto e a Lei do Desbravador.',
-
-'4. Ler o livro do Curso de Leitura do ano.',
-
-'5. Ler o livro Vaso de Barro.',
-
-'6. Participar ativamente da Classe Bíblica do seu Clube.',
-
-'II. DESCOBERTA ESPIRITUAL',
-
-
-'1.Memorizar e demonstrar o seu conhecimento:',
-'a) Criação: O que Deus criou em cada dia da Criação.',
-'b) 10 Pragas: Quais as pragas que caíram sobre o Egito.',
-'c) 12 Tribos: O nome de cada uma das 12 tribos de Israel.',
-'d) 39 livros do Antigo Testamento e demonstrar habilidade para encontrar qualquer um deles.',
-
-'2. Ler e explicar os versos abaixo:',
-'a) João 3:16',
-'b) Efésios 6:1-3',
-'c) II Timóteo 3:16',
-'d) Salmo 1',
-
-'3. Leitura bíblica:',
-'Gn 1, Gn 2, Gn 3, Gn 4:1-16, Gn 6:11-22, Gn 7, Gn 8, Gn 9:1-19, Gn 11:1-9, Gn 12:1-10, Gn 13, Gn 14:18-24, Gn 15, Gn 17:1-8; 15-22, Gn 18:1-15, Gn 18:16-33, Gn 19:1-29, Gn 21:1-21, Gn 22:1-19, Gn 23, Gn 24:1-46, 48, Gn 24:52-67, Gn 27, Gn 28, Gn 29, Gn 30:25-31; 31:2-3, 17-18, Gn 32, Gn 33, Gn 37, Gn 39, Gn 40, Gn 41, Gn 42, Gn 43, Gn 44, Gn 45, Gn 47, Gn 50, Êx 1, Êx 2, Êx 3, Êx 4:1-17; 27-31, Êx 5, Êx 7, Êx 8, Êx 9, Êx 10, 11, Êx 12, Êx 13:17-22; 14, Êx 15:22-27; 16, Êx 17, Êx 18, Êx 19, Êx 20, Êx 24, Êx 32, Êx 33, Êx 34:1-14; 29-35, Êx 35:4-29 e 40.',
-
-'III. SERVINDO A OUTROS',
-
-'1. Dedicar duas horas ajudando alguém em sua comunidade, através de duas das seguintes atividades:',
-'a) Visitar alguém que precisa de amizade e orar com essa pessoa.',
-'b) Oferecer alimento a alguém carente.',
-'c) Participar de um projeto ecológico ou educativo.',
-
-'2. Escrever uma redação explicando como ser um bom cidadão no lar e na escola.',
-
-'IV. DESENVOLVENDO AMIZADE',
-
-'1. Mencionar dez qualidades de um bom amigo e apresentar quatro situações diárias onde você praticou a Regra Áurea de Mateus 7:12.',
-
-'2. Saber cantar o Hino Nacional de seu país e conhecer sua história. Saber o nome do autor da letra e da música do hino.',
-
-'V. SAÚDE E APTIDÃO FÍSICA',
-
-'1. Completar uma das seguintes especialidades:',
-'a) Natação principiante I',
-'b) Cultura física',
-'c) Nós e amarras',
-'d) Segurança básica na água',
-
-'2. Utilizando a experiência de Daniel:',
-'a) Explicar os princípios de temperança que ele defendeu ou participar em uma apresentação ou encenação sobre Daniel 1.',
-'b) Memorizar e explicar Daniel 1:8.',
-'c) Escrever seu compromisso pessoal de seguir um estilo de vida saudável.',
-
-'3. Aprender os princípios de uma dieta saudável e ajudar a preparar um quadro com os grupos básicos de alimentos.',
-    
-'VI. ORGANIZAÇÃO E LIDERANÇA',
-
-'1. Através da observação, acompanhar todo o processo de planejamento até a execução de uma caminhada de 5 km.',
-
-'VII. ESTUDO DA NATUREZA',
-
-'1. Completar uma das seguintes especialidades:',
-'a) Felinos',
-'b) Cães',
-'c) Mamíferos',
-'d) Sementes',
-'e) Aves de estimação',
-
-'2. Aprender e demonstrar uma maneira para purificar a água e escrever um parágrafo destacando o significado de Jesus como a água da vida.',
-
-'3. Aprender e montar uma barraca em local apropriado.',
-
-'VIII. ARTE DE ACAMPAR',
-
-'1. Demonstrar como cuidar corretamente de uma corda. Fazer e explicar o uso prático dos seguintes nós:',
-'a) Simples',
-'b) Cego',
-'c) Direito',
-'d) Cirurgião',
-'e) Laís de guia',
-'f) Laís de guia duplo',
-'g) Escota',
-'h) Catau',
-'i) Pescador',
-'j) Fateixa',
-'k) Volta do fiel',
-'l) Nó de gancho',
-'m) Volta da ribeira',
-'n) Ordinário',
-
-'2. Completar a especialidade de Acampamento I.',
-
-'3. Apresentar dez regras para uma caminhada e explicar o que fazer quando estiver perdido.',
-
-'4. Aprender os sinais para seguir uma pista. Preparar e seguir uma pista de no mínimo 10 sinais, que também possa ser seguida por outros.',
-
-'IX. ESTILO DE VIDA',
-
-'1. Completar uma especialidade na área de Artes e habilidades manuais.'],
-    Companheiro: ['I - Geral',
+// --- DADOS DAS CLASSES ---
+const data = {
+  Amigo: [
+    '1. Ter, no mínimo, 10 anos de idade.', 
+    '2. Ser membro ativo do Clube de Desbravadores.', 
+    '3. Memorizar e explicar o Voto e a Lei do Desbravador.', 
+    '4. Ler o livro do Curso de Leitura do ano.', 
+    '5. Ler o livro Vaso de Barro.', 
+    '6. Participar ativamente da Classe Bíblica do seu Clube.', 
+    'II. DESCOBERTA ESPIRITUAL', 
+    '1.Memorizar e demonstrar o seu conhecimento:', 
+    'a) Criação: O que Deus criou em cada dia da Criação.', 
+    'b) 10 Pragas: Quais as pragas que caíram sobre o Egito.', 
+    'c) 12 Tribos: O nome de cada uma das 12 tribos de Israel.', 
+    'd) 39 livros do Antigo Testamento e demonstrar habilidade para encontrar qualquer um deles.', 
+    '2. Ler e explicar os versos abaixo:', 
+    'a) João 3:16', 
+    'b) Efésios 6:1-3', 
+    'c) II Timóteo 3:16', 
+    'd) Salmo 1', 
+    '3. Leitura bíblica: Gn 1-50, Êx 1-40.', 
+    'III. SERVINDO A OUTROS', 
+    '1. Dedicar duas horas ajudando alguém...', 
+    '2. Escrever uma redação...', 
+    'IV. DESENVOLVENDO AMIZADE', 
+    '1. Dez qualidades de um amigo...', 
+    '2. Hino Nacional...', 
+    'V. SAÚDE E APTIDÃO FÍSICA', 
+    '1. Especialidade de Saúde...', 
+    '2. Daniel 1...', 
+    '3. Dieta saudável...', 
+    'VI. ORGANIZAÇÃO E LIDERANÇA', 
+    '1. Caminhada 5km...', 
+    'VII. ESTUDO DA NATUREZA', 
+    '1. Especialidade Natureza...', 
+    '2. Purificar água...', 
+    '3. Montar barraca...', 
+    'VIII. ARTE DE ACAMPAR', 
+    '1. Nós e amarras...', 
+    '2. Acampamento I.', 
+    '3. Dez regras de caminhada...', 
+    '4. Sinais de pista...', 
+    'IX. ESTILO DE VIDA', 
+    '1. Especialidade Artes.'
+  ],
+  Companheiro: ['I - Geral',
 'Ter, no mínimo, 11 anos de idade.',
 'Ser membro ativo do Clube de Desbravadores.',
 'Ilustrar de forma criativa o significado do Voto dos Desbravadores.',
@@ -224,8 +138,8 @@ function ClassScreen({ route }) {
 'Simples',
 
 'IX - Estilo de Vida',
-'Completar uma especialidade não realizada anteriormente. Na seção de Artes e Habilidades Manuais.',],
-    Pesquisador: ['I - Geral',
+'Completar uma especialidade não realizada anteriormente. Na seção de Artes e Habilidades Manuais.'],
+  Pesquisador: ['I - Geral',
 'Ter, no mínimo, 12 anos de idade.',
 'Ser membro ativo do Clube de Desbravadores.',
 'Demonstrar sua compreensão do significado da Lei do Desbravador através de uma das seguintes atividades:',
@@ -303,8 +217,8 @@ function ClassScreen({ route }) {
 'Aprender a usar uma bússola ou GPS (urbano ou campo), e demonstrar sua habilidade encontrando endereços em uma zona urbana.',
 
 'IX - Estilo de Vida',
-'Completar uma especialidade não realizada anteriormente, em Artes e Habilidades Manuais.',],
-    Pioneiro: ['I - Geral',
+'Completar uma especialidade não realizada anteriormente, em Artes e Habilidades Manuais.'],
+  Pioneiro: ['I - Geral',
 'Ter, no mínimo, 13 anos de idade.',
 'Ser membro ativo do Clube de Desbravadores.',
 'Memorizar e entender o Alvo e o Lema JA.',
@@ -376,8 +290,8 @@ function ClassScreen({ route }) {
 'Completar uma especialidade não realizada anteriormente em uma das seguintes áreas:',
 'Atividades Missionárias',
 'Atividades Profissionais',
-'Atividades Agrícolas',],
-    Excursionista: ['I - Geral',
+'Atividades Agrícolas'],
+  Excursionista: ['I - Geral',
 'Ter, no mínimo, 14 anos de idade.',
 'Ser membro ativo do Clube de Desbravadores.',
 'Memorizar e explicar o significado do Objetivo JA.',
@@ -443,8 +357,8 @@ function ClassScreen({ route }) {
 'Atividades missionárias',
 'Atividades agrícolas',
 'Ciência e saúde',
-'Habilidades domésticas',],
-    Guia: ['I - Geral',
+'Habilidades domésticas'],
+  Guia: ['I - Geral',
 'Ter, no mínimo, 15 anos de idade.',
 'Ser membro ativo do clube de Desbravadores.',
 'Memorizar e explicar o Voto de Fidelidade à Bíblia.',
@@ -539,154 +453,213 @@ function ClassScreen({ route }) {
 'Atividades agrícolas',
 'Ciência e saúde',
 'Habilidades domésticas',
-'Atividades profissionais',]
-  };
+'Atividades profissionais']
+};
 
-  const [checkedItems, setCheckedItems] = useState({});
-
-  // 🔥 CARREGAR PROGRESSO
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const savedData = await AsyncStorage.getItem(name);
-      if (savedData !== null) {
-        setCheckedItems(JSON.parse(savedData));
-      }
-    } catch (error) {
-      console.log('Erro ao carregar', error);
-    }
-  };
-
-  // 🔥 SALVAR PROGRESSO
-  const toggleCheck = async (index) => {
-    const updated = {
-      ...checkedItems,
-      [index]: !checkedItems[index]
-    };
-
-    setCheckedItems(updated);
-
-    try {
-      await AsyncStorage.setItem(name, JSON.stringify(updated));
-    } catch (error) {
-      console.log('Erro ao salvar', error);
-    }
-  };
-
-  // 🔥 PROGRESSO
-  const totalItems = data[name]?.length || 0;
-  const checkedCount = Object.values(checkedItems).filter(Boolean).length;
-  const progress = totalItems > 0 ? (checkedCount / totalItems) * 100 : 0;
+// --- TELA INICIAL ---
+function HomeScreen({ navigation }) {
+  const classes = Object.keys(data);
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>{name}</Text>
-
-      <Text style={styles.progressText}>
-        Progresso: {progress.toFixed(0)}%
-      </Text>
-
-      <View style={styles.progressBarBackground}>
-        <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
-      </View>
-
-      {data[name]?.map((req, index) => (
+      <Text style={styles.title}>Classes dos Desbravadores</Text>
+      {classes.map((item, index) => (
         <TouchableOpacity
           key={index}
-          style={styles.card}
-          onPress={() => toggleCheck(index)}
+          style={styles.cardHome}
+          onPress={() => navigation.navigate('Classe', { name: item })}
         >
-          <Text style={styles.cardText}>
-            {checkedItems[index] ? '✅' : '⬜'} {req}
-          </Text>
+          <Text style={styles.cardTextHome}>{item}</Text>
         </TouchableOpacity>
       ))}
     </ScrollView>
   );
 }
 
+// --- TELA DA CLASSE ---
+function ClassScreen({ route, navigation }) {
+  const { name } = route.params || {};
+  const [checkedItems, setCheckedItems] = useState({});
+
+  useEffect(() => { 
+    loadData(); 
+  }, [name]);
+
+  const loadData = async () => {
+    try {
+      const savedData = await AsyncStorage.getItem(`v2_photos_${name}`);
+      if (savedData !== null) {
+        setCheckedItems(JSON.parse(savedData));
+      } else {
+        setCheckedItems({});
+      }
+    } catch (error) { 
+      console.log('Erro ao carregar dados:', error); 
+    }
+  };
+
+  // Alterna o checklist (marcar/desmarcar) ao tocar no texto do requisito
+  const toggleCheck = async (index) => {
+    const updated = { ...checkedItems };
+    
+    if (updated[index]) {
+      delete updated[index]; // Se já existia, remove completamente do objeto
+    } else {
+      updated[index] = true; // Se não existia, marca como ativo (true)
+    }
+    
+    setCheckedItems(updated);
+    try {
+      await AsyncStorage.setItem(`v2_photos_${name}`, JSON.stringify(updated));
+    } catch (error) {
+      console.log('Erro ao salvar checklist:', error);
+    }
+  };
+
+  // Salva ou remove fotos mantendo o estado estruturado
+  const savePhotoProgress = async (index, imageUri) => {
+    const updated = { ...checkedItems };
+    
+    if (imageUri === null) {
+      // Se for apenas uma marcação simples e removeu a foto, mantém como true
+      updated[index] = true;
+    } else {
+      updated[index] = imageUri; // Guarda a string da URI
+    }
+
+    setCheckedItems(updated);
+    try {
+      await AsyncStorage.setItem(`v2_photos_${name}`, JSON.stringify(updated));
+    } catch (error) {
+      console.log('Erro ao salvar foto:', error);
+    }
+  };
+
+  // Remove o requisito inteiro (desmarca e limpa foto)
+  const removeRequirement = async (index) => {
+    const updated = { ...checkedItems };
+    delete updated[index];
+    setCheckedItems(updated);
+    try {
+      await AsyncStorage.setItem(`v2_photos_${name}`, JSON.stringify(updated));
+    } catch (error) {
+      console.log('Erro ao remover requisito:', error);
+    }
+  };
+
+  const handleTakePicture = async (index) => {
+    const { granted } = await ImagePicker.requestCameraPermissionsAsync();
+    if (!granted) return Alert.alert('Aviso', 'Permissão de câmera negada');
+    
+    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 0.5 });
+    if (!result.canceled) savePhotoProgress(index, result.assets[0].uri);
+  };
+
+  const handlePickImage = async (index) => {
+    const result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 0.5 });
+    if (!result.canceled) savePhotoProgress(index, result.assets[0].uri);
+  };
+
+  const exportPDF = async () => {
+    const completedList = data[name].map((req, index) => {
+      return `<li>${checkedItems[index] ? '✅' : '⬜'} ${req}</li>`;
+    }).join('');
+
+    const html = `<html><body><h1>Relatório: ${name}</h1><ul>${completedList}</ul></body></html>`;
+    const { uri } = await Print.printToFileAsync({ html });
+    await Sharing.shareAsync(uri);
+  };
+
+  const totalItems = data[name]?.length || 0;
+  const checkedCount = Object.keys(checkedItems).length;
+  const progress = totalItems > 0 ? (checkedCount / totalItems) * 100 : 0;
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>{name}</Text>
+      
+      <TouchableOpacity style={styles.btnExport} onPress={exportPDF}>
+        <Text style={styles.btnExportText}>📥 Exportar Relatório PDF</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.progressText}>Progresso: {progress.toFixed(0)}%</Text>
+      <View style={styles.progressBarBackground}>
+        <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+      </View>
+
+      {data[name]?.map((req, index) => (
+        <View key={index} style={styles.cardReq}>
+          
+          {/* Clicar no texto/caixinha agora marca e desmarca perfeitamente */}
+          <TouchableOpacity onPress={() => toggleCheck(index)}>
+            <Text style={styles.cardText}>
+              {checkedItems[index] ? '✅' : '⬜'} {req}
+            </Text>
+          </TouchableOpacity>
+          
+          <View style={styles.photoArea}>
+            {typeof checkedItems[index] === 'string' ? (
+              <TouchableOpacity onPress={() => removeRequirement(index)}>
+                <Image source={{ uri: checkedItems[index] }} style={styles.thumbnail} />
+                <Text style={styles.removeText}>Toque na imagem para remover tudo</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.row}>
+                <TouchableOpacity style={styles.btnIcon} onPress={() => handleTakePicture(index)}>
+                  <Text style={styles.btnIconText}>📷 Foto</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.btnIcon} onPress={() => handlePickImage(index)}>
+                  <Text style={styles.btnIconText}>🖼️ Galeria</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </View>
+      ))}
+
+      {/* Botão de voltar estilizado no fim da página */}
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>Voltar para Classes</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+}
+
+// --- APP PRINCIPAL ---
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: { backgroundColor: '#0f172a' },
-          headerTintColor: '#fff'
-        }}
-      >
-        <Stack.Screen name="Home" component={HomeScreen} />
-
-        <Stack.Screen name="Amigo">
-          {(props) => <ClassScreen {...props} route={{ params: { name: 'Amigo' } }} />}
-        </Stack.Screen>
-
-        <Stack.Screen name="Companheiro">
-          {(props) => <ClassScreen {...props} route={{ params: { name: 'Companheiro' } }} />}
-        </Stack.Screen>
-
-        <Stack.Screen name="Pesquisador">
-          {(props) => <ClassScreen {...props} route={{ params: { name: 'Pesquisador' } }} />}
-        </Stack.Screen>
-
-        <Stack.Screen name="Pioneiro">
-          {(props) => <ClassScreen {...props} route={{ params: { name: 'Pioneiro' } }} />}
-        </Stack.Screen>
-
-        <Stack.Screen name="Excursionista">
-          {(props) => <ClassScreen {...props} route={{ params: { name: 'Excursionista' } }} />}
-        </Stack.Screen>
-
-        <Stack.Screen name="Guia">
-          {(props) => <ClassScreen {...props} route={{ params: { name: 'Guia' } }} />}
-        </Stack.Screen>
-
+      <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: '#0f172a' }, headerTintColor: '#fff' }}>
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Menu Principal' }} />
+        <Stack.Screen name="Classe" component={ClassScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f172a',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    color: '#facc15',
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center'
-  },
-  card: {
-    backgroundColor: '#1e293b',
-    padding: 15,
-    borderRadius: 15,
-    marginBottom: 10,
-  },
-  cardText: {
-    color: '#fff',
-    fontSize: 16
-  },
-  progressText: {
-    color: '#fff',
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: 'center'
-  },
-  progressBarBackground: {
-    height: 20,
-    backgroundColor: '#334155',
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginBottom: 20
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: '#22c55e',
-  }
+  container: { flex: 1, backgroundColor: '#0f172a', padding: 20 },
+  title: { fontSize: 24, color: '#facc15', fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  // Home
+  cardHome: { backgroundColor: '#1e293b', padding: 20, borderRadius: 15, marginBottom: 12, borderLeftWidth: 5, borderLeftColor: '#facc15' },
+  cardTextHome: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  // Requisitos
+  cardReq: { backgroundColor: '#1e293b', padding: 15, borderRadius: 15, marginBottom: 15 },
+  cardText: { color: '#fff', fontSize: 15, lineHeight: 22 },
+  progressText: { color: '#fff', textAlign: 'center', marginBottom: 10 },
+  progressBarBackground: { height: 12, backgroundColor: '#334155', borderRadius: 6, marginBottom: 20, overflow: 'hidden' },
+  progressBarFill: { height: '100%', backgroundColor: '#22c55e' },
+  // Fotos
+  photoArea: { marginTop: 10, alignItems: 'center' },
+  row: { flexDirection: 'row', gap: 10 },
+  btnIcon: { backgroundColor: '#334155', padding: 8, borderRadius: 8 },
+  btnIconText: { color: '#fff', fontSize: 12 },
+  thumbnail: { width: 120, height: 90, borderRadius: 8, borderWidth: 2, borderColor: '#22c55e' },
+  removeText: { color: '#ef4444', fontSize: 10, marginTop: 5, textAlign: 'center' },
+  // Exportar
+  btnExport: { backgroundColor: '#facc15', padding: 12, borderRadius: 10, marginBottom: 20, alignItems: 'center' },
+  btnExportText: { color: '#0f172a', fontWeight: 'bold' },
+  // Botão Voltar
+  backButton: { backgroundColor: '#facc15', padding: 15, borderRadius: 15, marginTop: 20, marginBottom: 40, alignItems: 'center' },
+  backButtonText: { color: '#0f172a', fontSize: 16, fontWeight: 'bold' }
 });
-     
